@@ -16,11 +16,27 @@ namespace BlogWriteTools
     public partial class Form1 : Form
     {
         public static string filePath = "";
+
+        int LvPosXOffset = 0;
+        int LvPosYOffset = 0;
         public Form1()
         {
             InitializeComponent();
             Config.Init();
             InitPostListView();
+            LvPosXOffset = Width - listView1.Width;
+            LvPosYOffset = Height - listView1.Height;
+        }
+        private void Form1_SizeChanged(object sender, EventArgs e)
+        {
+            listView1.Width = Width - Tb_Log.Width;
+            listView1.Height = Height - LvPosYOffset;
+
+            LogLabel.Location = new Point(2 + listView1.Width, listView1.Location.Y-14);
+
+            Tb_Log.Width = 182;
+            Tb_Log.Location = new Point(2 + listView1.Width, listView1.Location.Y);
+            Tb_Log.Height = Height;
         }
 
 
@@ -30,16 +46,41 @@ namespace BlogWriteTools
             InputBox inputBox = new InputBox();
             if (inputBox.ShowDialog() == DialogResult.OK)
             {
-                Tb_Log.Text += "\n正在创建，请稍后...";
-                CMD.PostName = inputBox.TextBoxValue;
-                postPath=Config.PostFolder+CMD.PostName;
-                string log = "";
-                CMD.RunCMD("cd /d " + Config.RootPath+" & hexo new post "+CMD.PostName, out log);
-                MessageBox.Show("创建成功");
-                Tb_Log.Text += log + "\n文件创建成功！";
+                string templatePath = Config.RootPath + "scaffolds\\post.md";
+                if (File.Exists(templatePath))
+                {
+                    string md = File.ReadAllText(templatePath);
+                    md = md.Replace("{{ title }}", inputBox.TextBoxValue);
+                    md = md.Replace("{{ date }}", CurrentTime);
+                    //FileUtil.WriteAllText(Config.PostFolder, inputBox.TextBoxValue);
+
+                    MessageBox.Show("创建成功" + Config.PostFolder);
+                }
+                else
+                {
+                    MessageBox.Show("模板文件不存在，请检查");
+                }
+
+
+                //Tb_Log.Text += "\n正在创建，请稍后...";
+                //CMD.PostName = inputBox.TextBoxValue;
+                //postPath = Config.PostFolder + CMD.PostName;
+                //string log = "";
+                //CMD.RunCMD("cd /d " + Config.RootPath + " & hexo new post " + CMD.PostName, out log);
+                //MessageBox.Show("创建成功");
+                //Tb_Log.Text += log + "\n文件创建成功！";
                 RefreshHander();
             }
         }
+        string CurrentTime
+        {
+            get
+            {
+                DateTime time = new DateTime();
+                return time.ToString("t");
+            }
+        }
+
         private string postPath="";
 
         private void 本地测试ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -271,14 +312,10 @@ namespace BlogWriteTools
             return curs[curs.Length - 1];
         }
 
+        //博文双击
+        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
 
-
-
-
-
-
-
-
-
+        }
     }
 }

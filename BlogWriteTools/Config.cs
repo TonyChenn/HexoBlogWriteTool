@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Forms;
 
 namespace BlogWriteTools
 {
@@ -33,9 +34,17 @@ namespace BlogWriteTools
 
         public static void Init(string path="config.dat")
         {
+            if(!File.Exists(path))
+            {
+                File.Create(path).Dispose();
+                MessageBox.Show("请配置Hexo信息");
+            }
             string[] lines = File.ReadAllLines(path);
-            rootPath = lines[0];
-            themeName = lines[1];
+            if(lines.Length>=2)
+            {
+                rootPath = lines[0];
+                themeName = lines[1];
+            }
         }
     }
 }

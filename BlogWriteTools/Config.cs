@@ -18,17 +18,16 @@ namespace BlogWriteTools
         {
             get
             {
-                rootPath.TrimEnd('\\');
-                return rootPath + "\\";
+                return rootPath.TrimEnd('\\');
             }
         }
         public static string themeFolder
         {
-            get { return RootPath + "themes\\" + themeName; }
+            get { return RootPath + "\\themes\\" + themeName; }
         }
         public static string PostFolder
         {
-            get { return RootPath + "source\\_posts\\"; }
+            get { return RootPath + "\\source\\_posts\\"; }
         }
 
 

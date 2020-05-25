@@ -19,6 +19,7 @@ namespace BlogWriteTools
 
         int LvPosXOffset = 0;
         int LvPosYOffset = 0;
+
         public Form1()
         {
             InitializeComponent();
@@ -46,13 +47,13 @@ namespace BlogWriteTools
             InputBox inputBox = new InputBox();
             if (inputBox.ShowDialog() == DialogResult.OK)
             {
-                string templatePath = Config.RootPath + "scaffolds\\post.md";
+                string templatePath = Config.RootPath + "\\scaffolds\\post.md";
                 if (File.Exists(templatePath))
                 {
                     string md = File.ReadAllText(templatePath);
                     md = md.Replace("{{ title }}", inputBox.TextBoxValue);
                     md = md.Replace("{{ date }}", CurrentTime);
-                    //FileUtil.WriteAllText(Config.PostFolder, inputBox.TextBoxValue);
+                    FileUtil.WriteAllText(Config.PostFolder + "\\" + inputBox.TextBoxValue, md);
 
                     MessageBox.Show("创建成功" + Config.PostFolder);
                 }
@@ -60,15 +61,6 @@ namespace BlogWriteTools
                 {
                     MessageBox.Show("模板文件不存在，请检查");
                 }
-
-
-                //Tb_Log.Text += "\n正在创建，请稍后...";
-                //CMD.PostName = inputBox.TextBoxValue;
-                //postPath = Config.PostFolder + CMD.PostName;
-                //string log = "";
-                //CMD.RunCMD("cd /d " + Config.RootPath + " & hexo new post " + CMD.PostName, out log);
-                //MessageBox.Show("创建成功");
-                //Tb_Log.Text += log + "\n文件创建成功！";
                 RefreshHander();
             }
         }
@@ -81,7 +73,6 @@ namespace BlogWriteTools
             }
         }
 
-        private string postPath="";
 
         private void 本地测试ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -156,7 +147,6 @@ namespace BlogWriteTools
             {
                 MessageBox.Show("配置路径不存在,请检查");
             }
-
         }
 
         //刷新列表显示
@@ -184,7 +174,15 @@ namespace BlogWriteTools
         #region 右键菜单的实现（ContextMenuTrip）
         private void 编辑ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (pathDict.Count == 0) return;
+            Process.Start(Config.PostFolder + "\\" + pathDict[0]);
+        }
 
+        private void 打开文件夹ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (pathDict.Count == 0) return;
+            ProcessStartInfo info = new ProcessStartInfo("explorer.exe",Config.PostFolder);
+            Process.Start(info);
         }
 
         private void 重命名ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -314,6 +312,12 @@ namespace BlogWriteTools
 
         //博文双击
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            编辑ToolStripMenuItem_Click(null, null);
+        }
+
+        //显示Post还是Draft
+        private void PostTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

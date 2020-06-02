@@ -179,13 +179,15 @@ namespace BlogWriteTools
         private void 编辑ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (selectedItem == null) return;
-            Process.Start(Config.PostFolder + "\\" + selectedItem.Text);
+            string path = CurPostType == PostType.Post ? Config.PostFolder : Config.DraftFolder;
+            Process.Start(path + selectedItem.Text);
         }
 
         private void 打开文件夹ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (selectedItem == null) return;
-            ProcessStartInfo info = new ProcessStartInfo("explorer.exe", Config.PostFolder);
+            string path = CurPostType == PostType.Post ? Config.PostFolder : Config.DraftFolder;
+            ProcessStartInfo info = new ProcessStartInfo("explorer.exe", path);
             Process.Start(info);
         }
 
@@ -248,13 +250,14 @@ namespace BlogWriteTools
         private void 重命名ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (selectedItem == null) return;
+            string path = CurPostType == PostType.Post ? Config.PostFolder : Config.DraftFolder;
             try
             {
                 InputBox reNameBox = new InputBox("重命名", OnlyFileName(selectedItem.Text));
                 if (reNameBox.ShowDialog() == DialogResult.OK)
                 {
-                    FileInfo info = new FileInfo(Config.PostFolder + selectedItem.Text);
-                    info.MoveTo(Config.PostFolder + reNameBox.TextBoxValue + ".md");
+                    FileInfo info = new FileInfo(path + selectedItem.Text);
+                    info.MoveTo(path + reNameBox.TextBoxValue + ".md");
                     Tb_Log.Text += "\n重命名完成";
                     RefreshHander();
                 }
@@ -321,9 +324,10 @@ namespace BlogWriteTools
             DialogResult result = MessageBox.Show("你确定要删除文件吗!", "删除警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
+                string path = CurPostType == PostType.Post ? Config.PostFolder : Config.DraftFolder;
                 try
                 {
-                    File.Delete(Config.PostFolder + selectedItem.Text);
+                    File.Delete(path + selectedItem.Text);
                     Tb_Log.Text += "\t 删除成功";
                 }
                 catch (Exception ex)

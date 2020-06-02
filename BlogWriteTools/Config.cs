@@ -27,7 +27,23 @@ namespace BlogWriteTools
         }
         public static string PostFolder
         {
-            get { return RootPath + "\\source\\_posts\\"; }
+            get
+            {
+                string path = RootPath + "\\source\\_posts\\";
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                return path;
+            }
+        }
+        public static string DraftFolder
+        {
+            get
+            {
+                string path= RootPath + "\\source\\_drafts\\";
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                return path;
+            }
         }
 
 

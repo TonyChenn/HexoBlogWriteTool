@@ -16,6 +16,7 @@ namespace BlogWriteTools
     public partial class Form1 : Form
     {
         public static string filePath = "";
+        static PostType CurPostType = PostType.Post;
 
         int LvPosXOffset = 0;
         int LvPosYOffset = 0;
@@ -24,6 +25,8 @@ namespace BlogWriteTools
         {
             InitializeComponent();
             Config.Init();
+
+            CurPostType = PostType.Post;
             InitPostListView();
             LvPosXOffset = Width - listView1.Width;
             LvPosYOffset = Height - listView1.Height;
@@ -33,7 +36,7 @@ namespace BlogWriteTools
             listView1.Width = Width - Tb_Log.Width;
             listView1.Height = Height - LvPosYOffset;
 
-            LogLabel.Location = new Point(2 + listView1.Width, listView1.Location.Y-14);
+            LogLabel.Location = new Point(2 + listView1.Width, listView1.Location.Y - 14);
 
             Tb_Log.Width = 182;
             Tb_Log.Location = new Point(2 + listView1.Width, listView1.Location.Y);
@@ -84,13 +87,13 @@ namespace BlogWriteTools
             });
             thread.Start();
             Tb_Log.Text += "\n创建成功，请访问： http://localhost:4000/";
-            System.Diagnostics.Process.Start("http://localhost:4000/");
+            Process.Start("http://localhost:4000/");
         }
 
         private void 关闭服务ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string log = "";
-            CMD.RunCMD("taskkill /f /t /im node.exe",out log);
+            CMD.RunCMD("taskkill /f /t /im node.exe", out log);
             Tb_Log.Text += "\n关闭结果：" + log;
         }
 
@@ -107,16 +110,16 @@ namespace BlogWriteTools
             Tb_Log.Text += "\n正在部署...";
             string log = "";
             CMD.RunCMD("cd /d " + Config.RootPath + " & hexo s", out log);
-            Tb_Log.Text += "\t 部署结果："+log;
+            Tb_Log.Text += "\t 部署结果：" + log;
         }
         # endregion
 
         #region 配置文件
         //路径配置文件
-        string path="config.dat";
+        string path = "config.dat";
         private void 主路径配置Item_Click(object sender, EventArgs e)
         {
-            if(!File.Exists(path))
+            if (!File.Exists(path))
                 File.Create(path);
             System.Diagnostics.Process.Start("notepad.exe", path);
         }
@@ -133,9 +136,10 @@ namespace BlogWriteTools
         //初始化Post列表
         private void InitPostListView()
         {
-            if(Directory.Exists(Config.PostFolder))
+            string postFolderPath = CurPostType == PostType.Post ? Config.PostFolder : Config.DraftFolder;
+            if (Directory.Exists(postFolderPath))
             {
-                string[] files = Directory.GetFiles(Config.PostFolder);
+                string[] files = Directory.GetFiles(postFolderPath);
                 foreach (string file in files)
                 {
                     ListViewItem item = new ListViewItem(GetFileName(file));
@@ -161,38 +165,95 @@ namespace BlogWriteTools
         }
 
         //获取选中的文件
-        Dictionary<int, string> pathDict = new Dictionary<int, string>();
+        ListViewItem selectedItem = null;
         private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            if (this.listView1.FocusedItem != null)
-            {
-                pathDict[e.ItemIndex] = e.Item.Text;
-            }
+            var selections = listView1.SelectedItems;
+            UpdateMoveSubMenu();
+
+            selectedItem = selections.Count > 0 ? selections[0] : null;
         }
         #endregion
 
         #region 右键菜单的实现（ContextMenuTrip）
         private void 编辑ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (pathDict.Count == 0) return;
-            Process.Start(Config.PostFolder + "\\" + pathDict[0]);
+            if (selectedItem == null) return;
+            Process.Start(Config.PostFolder + "\\" + selectedItem.Text);
         }
 
         private void 打开文件夹ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (pathDict.Count == 0) return;
-            ProcessStartInfo info = new ProcessStartInfo("explorer.exe",Config.PostFolder);
+            if (selectedItem == null) return;
+            ProcessStartInfo info = new ProcessStartInfo("explorer.exe", Config.PostFolder);
             Process.Start(info);
         }
 
+        void UpdateMoveSubMenu()
+        {
+            ToolStripDropDownItem item = contextMenuStrip1.Items[2] as ToolStripDropDownItem;
+            item.DropDownItems.Clear();
+
+            if (CurPostType == PostType.Post)
+            {
+                var _ = item.DropDownItems.Add("草稿区");
+                _.Click += (s, ex) =>
+                {
+                    try
+                    {
+                        if (selectedItem != null)
+                        {
+                            if (!Directory.Exists(Config.DraftFolder))
+                                Directory.CreateDirectory(Config.DraftFolder);
+                            File.Move(Config.PostFolder + "\\" + selectedItem.Text, Config.DraftFolder + "\\" + selectedItem.Text);
+                            selectedItem = null;
+                        }
+                    }
+                    catch (Exception err)
+                    {
+                        MessageBox.Show(err.Message);
+                    }
+                    finally
+                    {
+                        RefreshHander();
+                    }
+                };
+            }
+            else if (CurPostType == PostType.Draft)
+            {
+                var _ = item.DropDownItems.Add("发布区");
+                _.Click += (s, ex) =>
+                {
+                    try
+                    {
+                        if (selectedItem != null)
+                        {
+                            if (!Directory.Exists(Config.PostFolder))
+                                Directory.CreateDirectory(Config.PostFolder);
+                            File.Move(Config.DraftFolder + "\\" + selectedItem.Text, Config.PostFolder + "\\" + selectedItem.Text);
+                            selectedItem = null;
+                        }
+                    }
+                    catch (Exception err)
+                    {
+                        MessageBox.Show(err.Message);
+                    }
+                    finally
+                    {
+                        RefreshHander();
+                    }
+                };
+            }
+        }
         private void 重命名ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (selectedItem == null) return;
             try
             {
-                InputBox reNameBox = new InputBox("重命名", OnlyFileName(pathDict[0]));
+                InputBox reNameBox = new InputBox("重命名", OnlyFileName(selectedItem.Text));
                 if (reNameBox.ShowDialog() == DialogResult.OK)
                 {
-                    FileInfo info = new FileInfo(Config.PostFolder + pathDict[0]);
+                    FileInfo info = new FileInfo(Config.PostFolder + selectedItem.Text);
                     info.MoveTo(Config.PostFolder + reNameBox.TextBoxValue + ".md");
                     Tb_Log.Text += "\n重命名完成";
                     RefreshHander();
@@ -203,24 +264,23 @@ namespace BlogWriteTools
             {
                 Tb_Log.Text += "重命名出错，原因：" + ex.Message;
             }
-            pathDict.Clear();
+            selectedItem = null;
         }
 
         private void 复制ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (pathDict.Count == 0)
-                return;
-            string[] files = new string[pathDict.Count];
-            for (int i = 0; i < pathDict.Count; i++)
-            {
-                files[i] = Config.PostFolder+pathDict[i];
-            }
-            if (files == null) return;
-            DataObject obj = new DataObject();
-            obj.SetData(DataFormats.FileDrop, files);
-            Clipboard.SetDataObject(obj, true);
-            pathDict.Clear();
-            Tb_Log.Text += "\n已复制到剪切板";
+            if (selectedItem == null) return;
+            //string[] files = new string[pathDict.Count];
+            //for (int i = 0; i < pathDict.Count; i++)
+            //{
+            //    files[i] = Config.PostFolder + pathDict[i];
+            //}
+            //if (files == null) return;
+            //DataObject obj = new DataObject();
+            //obj.SetData(DataFormats.FileDrop, files);
+            //Clipboard.SetDataObject(obj, true);
+            //pathDict.Clear();
+            //Tb_Log.Text += "\n已复制到剪切板";
         }
 
         private void 剪切ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -242,7 +302,7 @@ namespace BlogWriteTools
                     foreach (var item in files)
                     {
                         string curfileName = GetFileName(item);
-                        if(IsMarkDownDoc(curfileName))
+                        if (IsMarkDownDoc(curfileName))
                             File.Copy(item, Config.PostFolder + curfileName);
                     }
                     RefreshHander();
@@ -257,20 +317,14 @@ namespace BlogWriteTools
 
         private void 删除ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (pathDict.Count == 0)
-                return;
-            DialogResult result= MessageBox.Show("你确定要删除文件吗!","删除警告",MessageBoxButtons.YesNo,MessageBoxIcon.Warning);
+            if (selectedItem == null) return;
+            DialogResult result = MessageBox.Show("你确定要删除文件吗!", "删除警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
                 try
                 {
-                    foreach (var item in pathDict)
-                    {
-                        listView1.Items.RemoveAt(item.Key);
-                        File.Delete(Config.PostFolder + item.Value);
-                    }
+                    File.Delete(Config.PostFolder + selectedItem.Text);
                     Tb_Log.Text += "\t 删除成功";
-                    pathDict.Clear();
                 }
                 catch (Exception ex)
                 {
@@ -282,7 +336,7 @@ namespace BlogWriteTools
                 }
             }
             //不管是否删除文件，都清空选中的文件列表
-            pathDict.Clear();
+            selectedItem = null;
         }
         # endregion 
 
@@ -295,9 +349,9 @@ namespace BlogWriteTools
         //返回文件名（不包含拓展名）
         string OnlyFileName(string name)
         {
-            string[] temp= name.Split('.');
+            string[] temp = name.Split('.');
             string newName = "";
-            for (int i = 0; i < temp.Length-1; i++)
+            for (int i = 0; i < temp.Length - 1; i++)
             {
                 newName += temp[i];
             }
@@ -316,10 +370,24 @@ namespace BlogWriteTools
             编辑ToolStripMenuItem_Click(null, null);
         }
 
-        //显示Post还是Draft
-        private void PostTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        //切换Post,Draft Toggle
+        private void PostTypeCheckChanged(object sender, EventArgs e)
         {
-
+            RadioButton rd = sender as RadioButton;
+            if (rd.Name.Equals("PostToggle"))
+            {
+                CurPostType = PostType.Post;
+            }
+            else if (rd.Name.Equals("DraftToggle"))
+            {
+                CurPostType = PostType.Draft;
+            }
+            RefreshHander();
         }
+    }
+
+    public enum PostType
+    {
+        Post, Draft,
     }
 }

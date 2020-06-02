@@ -47,7 +47,6 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.编辑ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.打开文件夹ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.重命名ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.复制ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.剪切ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,8 +55,9 @@
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.Btn_Refresh = new System.Windows.Forms.LinkLabel();
             this.Tb_Log = new System.Windows.Forms.RichTextBox();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.PostToggle = new System.Windows.Forms.RadioButton();
+            this.DraftToggle = new System.Windows.Forms.RadioButton();
+            this.移动到ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -190,67 +190,61 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.编辑ToolStripMenuItem,
             this.打开文件夹ToolStripMenuItem,
-            this.toolStripMenuItem2,
+            this.移动到ToolStripMenuItem,
             this.重命名ToolStripMenuItem,
             this.复制ToolStripMenuItem,
             this.剪切ToolStripMenuItem,
             this.粘贴ToolStripMenuItem,
             this.删除ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 180);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 202);
             // 
             // 编辑ToolStripMenuItem
             // 
             this.编辑ToolStripMenuItem.Name = "编辑ToolStripMenuItem";
-            this.编辑ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.编辑ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.编辑ToolStripMenuItem.Text = "编辑文档";
             this.编辑ToolStripMenuItem.Click += new System.EventHandler(this.编辑ToolStripMenuItem_Click);
             // 
             // 打开文件夹ToolStripMenuItem
             // 
             this.打开文件夹ToolStripMenuItem.Name = "打开文件夹ToolStripMenuItem";
-            this.打开文件夹ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.打开文件夹ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.打开文件夹ToolStripMenuItem.Text = "打开文件夹";
             this.打开文件夹ToolStripMenuItem.Click += new System.EventHandler(this.打开文件夹ToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(136, 22);
-            this.toolStripMenuItem2.Text = "移动至草稿";
             // 
             // 重命名ToolStripMenuItem
             // 
             this.重命名ToolStripMenuItem.Name = "重命名ToolStripMenuItem";
-            this.重命名ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.重命名ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.重命名ToolStripMenuItem.Text = "重命名";
             this.重命名ToolStripMenuItem.Click += new System.EventHandler(this.重命名ToolStripMenuItem_Click);
             // 
             // 复制ToolStripMenuItem
             // 
             this.复制ToolStripMenuItem.Name = "复制ToolStripMenuItem";
-            this.复制ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.复制ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.复制ToolStripMenuItem.Text = "复制";
             this.复制ToolStripMenuItem.Click += new System.EventHandler(this.复制ToolStripMenuItem_Click);
             // 
             // 剪切ToolStripMenuItem
             // 
             this.剪切ToolStripMenuItem.Name = "剪切ToolStripMenuItem";
-            this.剪切ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.剪切ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.剪切ToolStripMenuItem.Text = "剪切";
             this.剪切ToolStripMenuItem.Click += new System.EventHandler(this.剪切ToolStripMenuItem_Click);
             // 
             // 粘贴ToolStripMenuItem
             // 
             this.粘贴ToolStripMenuItem.Name = "粘贴ToolStripMenuItem";
-            this.粘贴ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.粘贴ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.粘贴ToolStripMenuItem.Text = "粘贴";
             this.粘贴ToolStripMenuItem.Click += new System.EventHandler(this.粘贴ToolStripMenuItem_Click);
             // 
             // 删除ToolStripMenuItem
             // 
             this.删除ToolStripMenuItem.Name = "删除ToolStripMenuItem";
-            this.删除ToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.删除ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.删除ToolStripMenuItem.Text = "删除";
             this.删除ToolStripMenuItem.Click += new System.EventHandler(this.删除ToolStripMenuItem_Click);
             // 
@@ -282,35 +276,43 @@
             this.Tb_Log.TabIndex = 11;
             this.Tb_Log.Text = "";
             // 
-            // radioButton1
+            // PostToggle
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(206, 28);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(47, 16);
-            this.radioButton1.TabIndex = 12;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "博文";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.PostToggle.AutoSize = true;
+            this.PostToggle.Checked = true;
+            this.PostToggle.Location = new System.Drawing.Point(206, 28);
+            this.PostToggle.Name = "PostToggle";
+            this.PostToggle.Size = new System.Drawing.Size(47, 16);
+            this.PostToggle.TabIndex = 12;
+            this.PostToggle.TabStop = true;
+            this.PostToggle.Text = "博文";
+            this.PostToggle.UseVisualStyleBackColor = true;
+            this.PostToggle.CheckedChanged += new System.EventHandler(this.PostTypeCheckChanged);
             // 
-            // radioButton2
+            // DraftToggle
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(259, 28);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(47, 16);
-            this.radioButton2.TabIndex = 13;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "草稿";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.DraftToggle.AutoSize = true;
+            this.DraftToggle.Location = new System.Drawing.Point(259, 28);
+            this.DraftToggle.Name = "DraftToggle";
+            this.DraftToggle.Size = new System.Drawing.Size(47, 16);
+            this.DraftToggle.TabIndex = 13;
+            this.DraftToggle.Text = "草稿";
+            this.DraftToggle.UseVisualStyleBackColor = true;
+            this.DraftToggle.CheckedChanged += new System.EventHandler(this.PostTypeCheckChanged);
+            // 
+            // 移动到ToolStripMenuItem
+            // 
+            this.移动到ToolStripMenuItem.Name = "移动到ToolStripMenuItem";
+            this.移动到ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.移动到ToolStripMenuItem.Text = "移动到...";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(902, 550);
-            this.Controls.Add(this.radioButton2);
-            this.Controls.Add(this.radioButton1);
+            this.Controls.Add(this.DraftToggle);
+            this.Controls.Add(this.PostToggle);
             this.Controls.Add(this.Tb_Log);
             this.Controls.Add(this.Btn_Refresh);
             this.Controls.Add(this.listView1);
@@ -357,9 +359,9 @@
         private System.Windows.Forms.RichTextBox Tb_Log;
         private System.Windows.Forms.ToolStripMenuItem 关闭服务ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 打开文件夹ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton PostToggle;
+        private System.Windows.Forms.RadioButton DraftToggle;
+        private System.Windows.Forms.ToolStripMenuItem 移动到ToolStripMenuItem;
     }
 }
 

@@ -45,7 +45,7 @@ namespace BlogWriteTools
 
 
         # region   MenuStrip的实现
-        private void 新建文章Item_Click(object sender, EventArgs e)
+        private void 新建Item_Click(object sender, EventArgs e)
         {
             InputBox inputBox = new InputBox();
             if (inputBox.ShowDialog() == DialogResult.OK)
@@ -56,7 +56,12 @@ namespace BlogWriteTools
                     string md = File.ReadAllText(templatePath);
                     md = md.Replace("{{ title }}", inputBox.TextBoxValue);
                     md = md.Replace("{{ date }}", CurrentTime);
-                    FileUtil.WriteAllText(Config.PostFolder + "\\" + inputBox.TextBoxValue, md);
+                    string path = CurPostType == PostType.Post ? Config.PostFolder : Config.DraftFolder;
+                    string createFilePath = path + "\\" + inputBox.TextBoxValue + ".md";
+                    
+                    if (CheckPostIsExist(createFilePath)) return;
+                    
+                    FileUtil.WriteAllText(createFilePath, md);
 
                     MessageBox.Show("创建成功" + Config.PostFolder);
                 }
@@ -67,14 +72,22 @@ namespace BlogWriteTools
                 RefreshHander();
             }
         }
-        string CurrentTime
+
+        bool CheckPostIsExist(string path)
         {
-            get
+            if(File.Exists(path))
             {
-                DateTime time = new DateTime();
-                return time.ToString("t");
+                DialogResult result = MessageBox.Show("文件已存在，是否替换？", "警告", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                if (result == DialogResult.OK) return false;
+                else if (result == DialogResult.Cancel) return true;
             }
+            return false;
         }
+
+        /// <summary>
+        /// 获取现在事件
+        /// </summary>
+        string CurrentTime { get { return DateTime.Now.ToString("g"); } }
 
 
         private void 本地测试ToolStripMenuItem_Click(object sender, EventArgs e)

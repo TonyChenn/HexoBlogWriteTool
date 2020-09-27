@@ -58,9 +58,9 @@ namespace BlogWriteTools
                     md = md.Replace("{{ date }}", CurrentTime);
                     string path = CurPostType == PostType.Post ? Config.PostFolder : Config.DraftFolder;
                     string createFilePath = path + "\\" + inputBox.TextBoxValue + ".md";
-                    
+
                     if (CheckPostIsExist(createFilePath)) return;
-                    
+
                     FileUtil.WriteAllText(createFilePath, md);
 
                     MessageBox.Show("创建成功" + Config.PostFolder);
@@ -75,7 +75,7 @@ namespace BlogWriteTools
 
         bool CheckPostIsExist(string path)
         {
-            if(File.Exists(path))
+            if (File.Exists(path))
             {
                 DialogResult result = MessageBox.Show("文件已存在，是否替换？", "警告", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
                 if (result == DialogResult.OK) return false;
@@ -193,7 +193,14 @@ namespace BlogWriteTools
         {
             if (selectedItem == null) return;
             string path = CurPostType == PostType.Post ? Config.PostFolder : Config.DraftFolder;
-            Process.Start(path + selectedItem.Text);
+            try
+            {
+                Process.Start(path + selectedItem.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void 打开文件夹ToolStripMenuItem_Click(object sender, EventArgs e)

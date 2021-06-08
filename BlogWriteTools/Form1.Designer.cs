@@ -90,35 +90,35 @@
             // 新建文章Item
             // 
             this.新建文章Item.Name = "新建文章Item";
-            this.新建文章Item.Size = new System.Drawing.Size(180, 22);
+            this.新建文章Item.Size = new System.Drawing.Size(124, 22);
             this.新建文章Item.Text = "新建";
             this.新建文章Item.Click += new System.EventHandler(this.新建Item_Click);
             // 
             // 本地测试ToolStripMenuItem
             // 
             this.本地测试ToolStripMenuItem.Name = "本地测试ToolStripMenuItem";
-            this.本地测试ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.本地测试ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.本地测试ToolStripMenuItem.Text = "本地部署";
             this.本地测试ToolStripMenuItem.Click += new System.EventHandler(this.本地测试ToolStripMenuItem_Click);
             // 
             // 关闭服务ToolStripMenuItem
             // 
             this.关闭服务ToolStripMenuItem.Name = "关闭服务ToolStripMenuItem";
-            this.关闭服务ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.关闭服务ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.关闭服务ToolStripMenuItem.Text = "关闭服务";
             this.关闭服务ToolStripMenuItem.Click += new System.EventHandler(this.关闭服务ToolStripMenuItem_Click);
             // 
             // 重新生成ToolStripMenuItem
             // 
             this.重新生成ToolStripMenuItem.Name = "重新生成ToolStripMenuItem";
-            this.重新生成ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.重新生成ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.重新生成ToolStripMenuItem.Text = "重新生成";
             this.重新生成ToolStripMenuItem.Click += new System.EventHandler(this.重新生成ToolStripMenuItem_Click);
             // 
             // 部署网站ToolStripMenuItem
             // 
             this.部署网站ToolStripMenuItem.Name = "部署网站ToolStripMenuItem";
-            this.部署网站ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.部署网站ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.部署网站ToolStripMenuItem.Text = "部署网站";
             this.部署网站ToolStripMenuItem.Click += new System.EventHandler(this.部署网站ToolStripMenuItem_Click);
             // 
@@ -323,6 +323,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Hexo部署工具(v1.1)";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

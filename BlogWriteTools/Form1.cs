@@ -87,7 +87,7 @@ namespace BlogWriteTools
         /// <summary>
         /// 获取现在事件
         /// </summary>
-        string CurrentTime { get { return DateTime.Now.ToString("g"); } }
+        string CurrentTime { get { return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); } }
 
 
         private void 本地测试ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -407,6 +407,23 @@ namespace BlogWriteTools
                 CurPostType = PostType.Draft;
             }
             RefreshHander();
+        }
+
+        /// <summary>
+        /// 关闭窗口拦截
+        /// </summary>
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult result = MessageBox.Show("关闭窗口会同时关闭本地服务！", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            if (result == DialogResult.Yes)
+            {
+                关闭服务ToolStripMenuItem_Click(sender, e);
+                e.Cancel = false;
+            }
+            else
+            {
+                e.Cancel = true;
+            }
         }
     }
 

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Specialized;
+using System.Collections;
 
 namespace BlogWriteTools
 {
@@ -17,6 +18,8 @@ namespace BlogWriteTools
     {
         public static string filePath = "";
         static PostType CurPostType = PostType.Post;
+        // 是否打开本地服务器
+        static bool IsOpenServer = false;
 
         int LvPosXOffset = 0;
         int LvPosYOffset = 0;
@@ -30,6 +33,8 @@ namespace BlogWriteTools
             InitPostListView();
             LvPosXOffset = Width - listView1.Width;
             LvPosYOffset = Height - listView1.Height;
+
+            btn_changeview.Text = "Details";
         }
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
@@ -85,45 +90,40 @@ namespace BlogWriteTools
         }
 
         /// <summary>
-        /// 获取现在事件
+        /// 获取现在时间
         /// </summary>
         string CurrentTime { get { return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); } }
 
 
         private void 本地测试ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Tb_Log.Text += "\n正在创建服务...";
-            string log = "";
+            IsOpenServer = true;
             Thread thread = new Thread(() =>
             {
-                CMD.RunCMD("cd /d " + Config.RootPath + " & hexo g & hexo s", out log);
+                CMD.RunCMD("cd /d " + Config.RootPath + " & hexo g & hexo s");
             });
             thread.Start();
-            Tb_Log.Text += "\n创建成功，请访问： http://localhost:4000/";
+            //Tb_Log.Text += "\n创建成功，请访问： http://localhost:4000/";
             Process.Start("http://localhost:4000/");
         }
 
         private void 关闭服务ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string log = "";
-            CMD.RunCMD("taskkill /f /t /im node.exe", out log);
-            Tb_Log.Text += "\n关闭结果：" + log;
+            IsOpenServer = false;
+            CMD.RunCMD("taskkill /f /t /im node.exe");
         }
 
         private void 重新生成ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Tb_Log.Text += "\n正在重新生成...";
-            string log = "";
-            CMD.RunCMD("cd /d " + Config.RootPath + " & hexo clean & hexo g", out log);
-            Tb_Log.Text += "\n生成成功！";
+            CMD.RunCMD("cd /d " + Config.RootPath + " & hexo clean & hexo g");
         }
 
         private void 部署网站ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            IsOpenServer = true;
             Tb_Log.Text += "\n正在部署...";
-            string log = "";
-            CMD.RunCMD("cd /d " + Config.RootPath + " & hexo s", out log);
-            Tb_Log.Text += "\t 部署结果：" + log;
+            CMD.RunCMD("cd /d " + Config.RootPath + " & hexo s");
         }
         # endregion
 
@@ -152,11 +152,15 @@ namespace BlogWriteTools
             string postFolderPath = CurPostType == PostType.Post ? Config.PostFolder : Config.DraftFolder;
             if (Directory.Exists(postFolderPath))
             {
-                string[] files = Directory.GetFiles(postFolderPath);
-                foreach (string file in files)
+                DirectoryInfo dir = new DirectoryInfo(postFolderPath);
+                FileInfo[] files = dir.GetFiles("*.md", SearchOption.TopDirectoryOnly);
+                foreach (FileInfo file in files)
                 {
-                    ListViewItem item = new ListViewItem(GetFileName(file));
+                    ListViewItem item = new ListViewItem();
                     item.ImageIndex = 0;
+                    item.Text = GetFileName(file.Name);
+                    item.SubItems.Add("未知");
+                    item.SubItems.Add((file.Length / 1000) + "KB");
                     listView1.Items.Add(item);
                 }
             }
@@ -414,6 +418,8 @@ namespace BlogWriteTools
         /// </summary>
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!IsOpenServer) { e.Cancel = false; return; }
+
             DialogResult result = MessageBox.Show("关闭窗口会同时关闭本地服务！", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if (result == DialogResult.Yes)
             {
@@ -425,10 +431,90 @@ namespace BlogWriteTools
                 e.Cancel = true;
             }
         }
+        // 切换视图
+        private void btn_changeview_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (listView1.View == View.Tile)
+            {
+                listView1.View = View.Details;
+                btn_changeview.Text = "Details";
+            }
+            else
+            {
+                listView1.View = View.Tile;
+                btn_changeview.Text = "Tile";
+            }
+        }
+
+        // 点击title排序
+        private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (listView1.Sorting == SortOrder.Ascending)
+                listView1.Sorting = SortOrder.Descending;
+            else
+                listView1.Sorting = SortOrder.Ascending;
+
+            listView1.ListViewItemSorter = new ListViewItemComparer(e.Column, listView1.Sorting);
+        }
     }
 
     public enum PostType
     {
         Post, Draft,
+    }
+}
+
+
+
+public class ListViewItemComparer : IComparer
+{
+
+    private int col;
+
+    private SortOrder order;
+    public ListViewItemComparer()
+    {
+        col = 0;
+        order = SortOrder.Ascending;
+    }
+
+    public ListViewItemComparer(int column, SortOrder order)
+    {
+        col = column;
+        this.order = order;
+    }
+
+    public int Compare(object x, object y)
+    {
+        int returnVal = -1;
+        double a = 0, b = 0;
+
+        try
+        {
+            if (double.TryParse(((ListViewItem)x).SubItems[col].Text, out a) && double.TryParse(((ListViewItem)y).SubItems[col].Text, out b))
+            {
+                returnVal = a >= b ? (a == b ? 0 : 1) : -1;
+                if (order == SortOrder.Descending)
+                {
+                    returnVal *= -1;
+                }
+            }
+            else
+            {
+                returnVal = String.Compare(((ListViewItem)x).SubItems[col].Text, ((ListViewItem)y).SubItems[col].Text);
+                // Determine whether the sort order is descending.
+                if (order == SortOrder.Descending)
+                {
+                    // Invert the value returned by String.Compare.
+                    returnVal *= -1;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            //do nothing
+        }
+        return returnVal;
+
     }
 }

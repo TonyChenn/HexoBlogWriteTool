@@ -11,7 +11,7 @@ namespace BlogWriteTools
     {
         public static string PostName = "";
 
-        public static void RunCMD(string cmd, out string output)
+        public static void RunCMD(string cmd)
         {
             cmd = cmd.Trim().TrimEnd('&') + " & exit";
             Debug.Print(cmd);
@@ -31,9 +31,15 @@ namespace BlogWriteTools
                 p.StandardInput.AutoFlush = true;
 
                 //获取cmd窗口的输出信息
-                output = p.StandardOutput.ReadToEnd();
-                p.WaitForExit();//等待程序执行完退出进程
-                p.Close();
+                using(var sr = p.StandardOutput)
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        Console.WriteLine(sr.Read());
+                    }
+                    if (!p.HasExited)
+                        p.Kill();
+                }
             }
         }
     }

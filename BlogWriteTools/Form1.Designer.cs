@@ -44,6 +44,9 @@
             this.LogLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.编辑ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.打开文件夹ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,11 +56,13 @@
             this.剪切ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.粘贴ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.删除ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.small_imageList = new System.Windows.Forms.ImageList(this.components);
             this.Btn_Refresh = new System.Windows.Forms.LinkLabel();
             this.Tb_Log = new System.Windows.Forms.RichTextBox();
             this.PostToggle = new System.Windows.Forms.RadioButton();
             this.DraftToggle = new System.Windows.Forms.RadioButton();
+            this.btn_changeview = new System.Windows.Forms.LinkLabel();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -173,17 +178,40 @@
             // 
             // listView1
             // 
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
             this.listView1.ContextMenuStrip = this.contextMenuStrip1;
+            this.listView1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.listView1.HideSelection = false;
-            this.listView1.LargeImageList = this.imageList1;
+            this.listView1.LargeImageList = this.imageList;
             this.listView1.Location = new System.Drawing.Point(2, 46);
-            this.listView1.Margin = new System.Windows.Forms.Padding(2);
+            this.listView1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 2);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(716, 503);
+            this.listView1.SmallImageList = this.small_imageList;
             this.listView1.TabIndex = 9;
             this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
             this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
             this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "名称";
+            this.columnHeader1.Width = 300;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "标签";
+            this.columnHeader2.Width = 150;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "大小";
+            this.columnHeader3.Width = 100;
             // 
             // contextMenuStrip1
             // 
@@ -254,11 +282,17 @@
             this.删除ToolStripMenuItem.Text = "删除";
             this.删除ToolStripMenuItem.Click += new System.EventHandler(this.删除ToolStripMenuItem_Click);
             // 
-            // imageList1
+            // imageList
             // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "md.png");
+            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList.Images.SetKeyName(0, "md.png");
+            // 
+            // small_imageList
+            // 
+            this.small_imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("small_imageList.ImageStream")));
+            this.small_imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.small_imageList.Images.SetKeyName(0, "md.png");
             // 
             // Btn_Refresh
             // 
@@ -306,11 +340,23 @@
             this.DraftToggle.UseVisualStyleBackColor = true;
             this.DraftToggle.CheckedChanged += new System.EventHandler(this.PostTypeCheckChanged);
             // 
+            // btn_changeview
+            // 
+            this.btn_changeview.AutoSize = true;
+            this.btn_changeview.Location = new System.Drawing.Point(649, 30);
+            this.btn_changeview.Name = "btn_changeview";
+            this.btn_changeview.Size = new System.Drawing.Size(65, 12);
+            this.btn_changeview.TabIndex = 14;
+            this.btn_changeview.TabStop = true;
+            this.btn_changeview.Text = "linkLabel1";
+            this.btn_changeview.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.btn_changeview_LinkClicked);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(902, 550);
+            this.Controls.Add(this.btn_changeview);
             this.Controls.Add(this.DraftToggle);
             this.Controls.Add(this.PostToggle);
             this.Controls.Add(this.Tb_Log);
@@ -319,10 +365,11 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.LogLabel);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
-            this.Text = "Hexo部署工具(v1.1)";
+            this.Text = "Hexo部署工具(v1.2)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             this.menuStrip1.ResumeLayout(false);
@@ -348,7 +395,7 @@
         private System.Windows.Forms.ToolStripMenuItem 重新生成ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 部署网站ToolStripMenuItem;
         private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.LinkLabel Btn_Refresh;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 编辑ToolStripMenuItem;
@@ -363,6 +410,11 @@
         private System.Windows.Forms.RadioButton PostToggle;
         private System.Windows.Forms.RadioButton DraftToggle;
         private System.Windows.Forms.ToolStripMenuItem 移动到ToolStripMenuItem;
+        private System.Windows.Forms.LinkLabel btn_changeview;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ImageList small_imageList;
     }
 }
 
